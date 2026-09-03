@@ -1,0 +1,6 @@
+{
+  "name": "Ur VPN",
+  "description": "Ur VPN - Ultra-fast, secure VIP proxy client",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

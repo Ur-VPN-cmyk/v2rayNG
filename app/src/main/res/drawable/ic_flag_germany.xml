@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="20dp"
+    android:viewportWidth="30"
+    android:viewportHeight="20">
+    <!-- Germany Flag (Black, Red, Gold bands) -->
+    <!-- Black top band -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M0,0h30v6.67h-30z" />
+    <!-- Red middle band -->
+    <path
+        android:fillColor="#DD0000"
+        android:pathData="M0,6.67h30v6.66h-30z" />
+    <!-- Gold bottom band -->
+    <path
+        android:fillColor="#FFCE00"
+        android:pathData="M0,13.33h30v6.67h-30z" />
+</vector>

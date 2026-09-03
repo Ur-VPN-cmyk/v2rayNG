@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_primary">#070A12</color>
+    <color name="color_bg_dark">#070A12</color>
+    <color name="color_bg_navy">#10192D</color>
+    <color name="color_card_surface">#121A2A</color>
+    <color name="color_card_stroke">#1E2C48</color>
+    <color name="color_vip_gold">#FFB800</color>
+    <color name="color_accent">#00E676</color>
+    <color name="color_emerald_glow">#00E676</color>
+    <color name="color_idle">#64748B</color>
+    <color name="color_connecting">#FFB800</color>
+    <color name="color_metric_ping">#00E5FF</color>
+    <color name="color_metric_duration">#8C52FF</color>
+    <color name="color_metric_download">#00E676</color>
+    <color name="color_metric_upload">#FF9100</color>
+    <color name="color_cyber_slate">#25334D</color>
+    <color name="color_card_bg_light">#121A2A</color>
+    <color name="color_card_stroke_light">#1E2C48</color>
+</resources>

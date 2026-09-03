@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- QR code scanning, manual config addition, and clipboard importing are hidden and disabled -->
+    <item
+        android:id="@+id/scan_qrcode"
+        android:title="@string/menu_item_import_config_qrcode"
+        android:visible="false"
+        android:enabled="false"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/import_clipboard"
+        android:title="@string/menu_item_import_config_clipboard"
+        android:visible="false"
+        android:enabled="false"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/import_manually"
+        android:title="@string/menu_item_import_config_policy_group"
+        android:visible="false"
+        android:enabled="false"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/import_config_local"
+        android:title="@string/menu_item_import_config_local"
+        android:visible="false"
+        android:enabled="false"
+        app:showAsAction="never" />
+</menu>

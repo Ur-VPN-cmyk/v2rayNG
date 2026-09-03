@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/color_bg_dark">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="20dp">
+
+        <!-- a. Top Header / Server Location Card -->
+        <LinearLayout
+            android:id="@+id/card_server_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/ic_rounded_corner_active"
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="14dp">
+
+            <!-- Germany Flag -->
+            <ImageView
+                android:id="@+id/iv_server_flag"
+                android:layout_width="44dp"
+                android:layout_height="30dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_flag_germany"
+                android:contentDescription="@string/server_location_default" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
+
+                <TextView
+                    android:id="@+id/tv_server_location_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/server_location_default"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="#F8FAFC" />
+
+                <TextView
+                    android:id="@+id/tv_server_location_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/server_speed_fast"
+                    android:textSize="13sp"
+                    android:textColor="#00E676" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_vip_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vip_server_badge"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#FFB800"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp" />
+        </LinearLayout>
+
+        <!-- b. Central One-Tap Power Control -->
+        <FrameLayout
+            android:id="@+id/frame_power_button_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp">
+
+            <!-- Decorative Outer Ring -->
+            <View
+                android:id="@+id/view_power_outer_ring"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_power_glow"
+                android:alpha="0.25" />
+
+            <!-- Main Power Button (140dp x 140dp) -->
+            <FrameLayout
+                android:id="@+id/btn_power_toggle"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_rounded_corner_active"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/iv_power_icon"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_power_48dp"
+                    android:contentDescription="@string/btn_connect" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <!-- Status Label Beneath Central Button -->
+        <TextView
+            android:id="@+id/tv_vpn_status_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/vpn_status_disconnected"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#F8FAFC" />
+
+        <TextView
+            android:id="@+id/tv_vpn_action_subtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/btn_connect"
+            android:textSize="14sp"
+            android:letterSpacing="0.1"
+            android:textStyle="bold"
+            android:textColor="#64748B" />
+
+        <!-- c. Bottom Metrics Grid (2x2 Grid) -->
+        <LinearLayout
+            android:id="@+id/grid_vpn_metrics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:orientation="vertical">
+
+            <!-- Row 1: Latency & Duration -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- 1. Latency / Ping Tile -->
+                <LinearLayout
+                    android:id="@+id/card_stat_ping"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="6dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/ic_rounded_corner_inactive"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_network_ping_24dp"
+                            android:contentDescription="@string/stat_ping" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/stat_ping"
+                            android:textSize="13sp"
+                            android:textColor="#94A3B8" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_stat_ping_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="-- ms"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:textColor="#F8FAFC" />
+                </LinearLayout>
+
+                <!-- 2. Session Duration Tile -->
+                <LinearLayout
+                    android:id="@+id/card_stat_duration"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="6dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/ic_rounded_corner_inactive"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_timer_24dp"
+                            android:contentDescription="@string/stat_duration" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/stat_duration"
+                            android:textSize="13sp"
+                            android:textColor="#94A3B8" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_stat_duration_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="00:00:00"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:textColor="#F8FAFC" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 2: Download & Upload Speed -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <!-- 3. Download Speed Tile -->
+                <LinearLayout
+                    android:id="@+id/card_stat_download"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="6dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/ic_rounded_corner_inactive"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_download_24dp"
+                            android:contentDescription="@string/stat_download" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/stat_download"
+                            android:textSize="13sp"
+                            android:textColor="#94A3B8" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_stat_download_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0.0 KB/s"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:textColor="#F8FAFC" />
+                </LinearLayout>
+
+                <!-- 4. Upload Speed Tile -->
+                <LinearLayout
+                    android:id="@+id/card_stat_upload"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="6dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/ic_rounded_corner_inactive"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_upload_24dp"
+                            android:contentDescription="@string/stat_upload" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/stat_upload"
+                            android:textSize="13sp"
+                            android:textColor="#94A3B8" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_stat_upload_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="0.0 KB/s"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:textColor="#F8FAFC" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Hidden fab view to satisfy compatibility with legacy references if needed -->
+        <View
+            android:id="@+id/fab"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

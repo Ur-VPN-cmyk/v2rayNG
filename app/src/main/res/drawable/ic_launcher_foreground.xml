@@ -1,0 +1,120 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Ambient Shield Aura / Outer Glow -->
+    <path
+        android:pathData="M54,23 L79,28 C79,56 68,73 54,82 C40,73 29,56 29,28 Z"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="5"
+        android:strokeAlpha="0.18"
+        android:fillColor="#00000000" />
+
+    <path
+        android:pathData="M54,24 L78,29 C78,55 67,72 54,81 C41,72 30,55 30,29 Z"
+        android:strokeColor="#FFB800"
+        android:strokeWidth="2"
+        android:strokeAlpha="0.25"
+        android:fillColor="#00000000" />
+
+    <!-- 3D Metallic Shield Beveled Border -->
+    <path android:pathData="M54,25 L77,30 C77,55 67,70 54,79 C41,70 31,55 31,30 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="31"
+                android:startY="25"
+                android:endX="77"
+                android:endY="79"
+                android:startColor="#80E9FF"
+                android:centerColor="#2A3C5E"
+                android:endColor="#FFB800" />
+        </aapt:attr>
+    </path>
+
+    <!-- Shield Inner Core - Left Facet (Key Light: Sleek Gunmetal Cyan) -->
+    <path android:pathData="M54,28 L34,32 C34,53 43,66 54,75 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="34"
+                android:startY="32"
+                android:endX="54"
+                android:endY="75"
+                android:startColor="#1E2F4C"
+                android:endColor="#0F1728" />
+        </aapt:attr>
+    </path>
+
+    <!-- Shield Inner Core - Right Facet (Ambient Shadow: Deep Obsidian Steel) -->
+    <path android:pathData="M54,28 L74,32 C74,53 65,66 54,75 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="74"
+                android:startY="32"
+                android:endX="54"
+                android:endY="75"
+                android:startColor="#152136"
+                android:endColor="#080D17" />
+        </aapt:attr>
+    </path>
+
+    <!-- Center Facet Dividing Line -->
+    <path
+        android:pathData="M54,28 L54,75"
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="0.8"
+        android:strokeAlpha="0.45" />
+
+    <!-- Modern Futuristic "U" Monogram Base (Glow Layer) -->
+    <path
+        android:pathData="M42,39 L47,39 L47,52 C47,56.5 50,59.5 54,59.5 C58,59.5 61,56.5 61,52 L61,39 L66,39 L66,52 C66,60 60.5,64.5 54,64.5 C47.5,64.5 42,60 42,52 Z"
+        android:fillColor="#00E5FF"
+        android:fillAlpha="0.25" />
+
+    <!-- Modern Futuristic "U" Monogram (Neon Cyan & Platinum) -->
+    <path android:pathData="M43,40 L47.5,40 L47.5,52 C47.5,55.8 50.2,58.5 54,58.5 C57.8,58.5 60.5,55.8 60.5,52 L60.5,40 L65,40 L65,52 C65,59.2 59.8,63.2 54,63.2 C48.2,63.2 43,59.2 43,52 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="43"
+                android:startY="40"
+                android:endX="65"
+                android:endY="63"
+                android:startColor="#FFFFFF"
+                android:centerColor="#00E5FF"
+                android:endColor="#00B0FF" />
+        </aapt:attr>
+    </path>
+
+    <!-- Sharp Electric Lightning Bolt Accent (Golden Energy Core) -->
+    <path android:pathData="M56,33 L48,48 L53.5,48 L50.5,63 L61,46 L55.5,46 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="48"
+                android:startY="33"
+                android:endX="61"
+                android:endY="63"
+                android:startColor="#FFF3B0"
+                android:centerColor="#FFB800"
+                android:endColor="#FF9100" />
+        </aapt:attr>
+    </path>
+
+    <!-- Lightning Bolt Core Glint -->
+    <path
+        android:pathData="M55,36 L49.5,47 L53.5,47 L51.5,58 L59,47 L55,47 Z"
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.75" />
+
+    <!-- Top Shield Crown / Gem Highlight -->
+    <path
+        android:pathData="M54,26 L57,29 L51,29 Z"
+        android:fillColor="#00E5FF" />
+
+</vector>
