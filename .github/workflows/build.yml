@@ -17,8 +17,10 @@ jobs:
         with:
           submodules: false
 
-      - name: Clone AndroidLibXrayLite
+      - name: Sanitize and clone native C++ dependencies
         run: |
+          rm -f .gitmodules
+          git submodule deinit -f --all || true
           rm -rf AndroidLibXrayLite
           git clone --depth=1 --recurse-submodules https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
           find AndroidLibXrayLite -name ".git*" -exec rm -rf {} +
@@ -29,14 +31,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK, NDK, and CMake
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'ndk;25.2.9519653 cmake;3.22.1'
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --info
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
