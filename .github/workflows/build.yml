@@ -15,13 +15,17 @@ jobs:
         with:
           submodules: false
 
-      - name: Sanitize and Clone Native C++ Dependencies
+      - name: Setup Gitmodules and Clone Core Libraries
         run: |
-          rm -f .gitmodules
-          git submodule deinit -f --all || true
+          cat << 'EOF' > .gitmodules
+          [submodule "AndroidLibXrayLite"]
+          	path = AndroidLibXrayLite
+          	url = https://github.com/2dust/AndroidLibXrayLite.git
+          EOF
+          git submodule sync
           rm -rf AndroidLibXrayLite
           git clone --depth=1 --recurse-submodules https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
-          find AndroidLibXrayLite -name ".git*" -exec rm -rf {} +
+          rm -rf AndroidLibXrayLite/.git
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -29,12 +33,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK, NDK & CMake
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'ndk;25.2.9519653 cmake;3.22.1'
+      - name: Setup Android SDK and Accept Licenses
+        run: |
+          mkdir -p "$ANDROID_HOME/licenses"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;25.2.9519653" "cmake;3.22.1"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
 
-      - name: Make Gradlew Executable
+      - name: Grant Execute Permission for Gradlew
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
