@@ -2,9 +2,7 @@ name: Build Ur VPN APK
 
 on:
   push:
-    branches:
-      - master
-      - main
+    branches: [ master, main ]
   workflow_dispatch:
 
 jobs:
@@ -12,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           submodules: false
 
-      - name: Sanitize and clone native C++ dependencies
+      - name: Sanitize and Clone Native C++ Dependencies
         run: |
           rm -f .gitmodules
           git submodule deinit -f --all || true
@@ -31,12 +29,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK, NDK, and CMake
+      - name: Setup Android SDK, NDK & CMake
         uses: android-actions/setup-android@v3
         with:
           packages: 'ndk;25.2.9519653 cmake;3.22.1'
 
-      - name: Make Gradle wrapper executable
+      - name: Make Gradlew Executable
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
@@ -44,6 +42,7 @@ jobs:
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: UrVPN-Debug-APK
           path: app/build/outputs/apk/debug/*.apk
