@@ -1,5 +1,23 @@
-      - name: Setup Git LFS and Clone Core Libraries
+name: Build Ur VPN APK
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Git LFS and Clone AndroidLibXrayLite
         run: |
+          sudo apt-get update && sudo apt-get install -y git-lfs
           git lfs install
           rm -rf AndroidLibXrayLite
           git clone --depth=1 --recurse-submodules https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
@@ -7,5 +25,53 @@
           git lfs pull
           find . -name ".git*" -exec rm -rf {} +
           cd ..
-          # التحقق من أن حجم المكتبة حقيقي وليس مؤشر نصي
-          ls -lh AndroidLibXrayLite/
+          echo "Verifying downloaded library files:"
+          ls -lhR AndroidLibXrayLite/
+
+      - name: Restore Gitmodules Reference
+        run: |
+          cat << 'EOF' > .gitmodules
+          [submodule "AndroidLibXrayLite"]
+          	path = AndroidLibXrayLite
+          	url = https://github.com/2dust/AndroidLibXrayLite.git
+          EOF
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK, NDK and Accept Licenses
+        run: |
+          mkdir -p "$ANDROID_HOME/licenses"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;25.2.9519653" "cmake;3.22.1"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+
+      - name: Generate Debug Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          cp debug.keystore app/debug.keystore || true
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Verify Native Core Libraries in APK
+        run: |
+          APK_FILE=$(find app/build/outputs/apk/debug/ -name "*.apk" | head -n 1)
+          echo "Final APK Size:"
+          ls -lh "$APK_FILE"
+          echo "Verifying embedded .so binary engines:"
+          unzip -l "$APK_FILE" | grep -E "\.so|libv2ray" || echo "CRITICAL WARNING: No native core binaries found!"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: UrVPN-Debug-APK
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 7
