@@ -6,17 +6,30 @@
     "network": "udp"
   },
   {
+    "remarks": "Direct DNS",
+    "outboundTag": "direct",
+    "port": "53",
+    "network": "udp,tcp"
+  },
+  {
     "remarks": "Bypass Private LAN IP",
     "outboundTag": "direct",
     "ip": [
-      "geoip:private"
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16",
+      "127.0.0.0/8",
+      "fc00::/7",
+      "fe80::/10",
+      "::1/128"
     ]
   },
   {
     "remarks": "Bypass Private LAN Domain",
     "outboundTag": "direct",
     "domain": [
-      "geosite:private"
+      "domain:local",
+      "domain:localhost"
     ]
   },
   {

@@ -25,12 +25,12 @@ object AppPresetConfig {
 
         // Ensure default routing ruleset is clean Global (Proxy All) mode
         val existingRules = MmkvManager.decodeRoutingRulesets()
-        val hasCnRules = existingRules?.any { rule ->
-            rule.domain?.any { it.contains("cn", ignoreCase = true) || it.contains("chinese", ignoreCase = true) } == true ||
-            rule.ip?.any { it.contains("cn", ignoreCase = true) } == true
+        val hasOutdatedRules = existingRules?.any { rule ->
+            rule.domain?.any { it.contains("cn", ignoreCase = true) || it.startsWith("geosite:") } == true ||
+            rule.ip?.any { it.contains("cn", ignoreCase = true) || it.startsWith("geoip:") } == true
         } ?: true
 
-        if (existingRules.isNullOrEmpty() || hasCnRules) {
+        if (existingRules.isNullOrEmpty() || hasOutdatedRules) {
             val globalRules = createGlobalRoutingRuleset()
             MmkvManager.encodeRoutingRulesets(globalRules)
         }
@@ -47,16 +47,35 @@ object AppPresetConfig {
                 locked = false
             ),
             RulesetItem(
+                remarks = "Direct DNS",
+                outboundTag = AppConfig.TAG_DIRECT,
+                port = "53",
+                network = "udp,tcp",
+                enabled = true,
+                locked = false
+            ),
+            RulesetItem(
                 remarks = "Bypass Private LAN IP",
                 outboundTag = AppConfig.TAG_DIRECT,
-                ip = arrayListOf("geoip:private"),
+                ip = arrayListOf(
+                    "10.0.0.0/8",
+                    "172.16.0.0/12",
+                    "192.168.0.0/16",
+                    "127.0.0.0/8",
+                    "fc00::/7",
+                    "fe80::/10",
+                    "::1/128"
+                ),
                 enabled = true,
                 locked = false
             ),
             RulesetItem(
                 remarks = "Bypass Private LAN Domain",
                 outboundTag = AppConfig.TAG_DIRECT,
-                domain = arrayListOf("geosite:private"),
+                domain = arrayListOf(
+                    "domain:local",
+                    "domain:localhost"
+                ),
                 enabled = true,
                 locked = false
             ),

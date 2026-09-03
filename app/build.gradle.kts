@@ -46,6 +46,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     kotlin {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
@@ -127,6 +131,8 @@ dependencies {
 
     // Testing Libraries
     testImplementation(libs.junit)
+    testImplementation(libs.org.mockito.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     coreLibraryDesugaring(libs.desugar.jdk.libs)

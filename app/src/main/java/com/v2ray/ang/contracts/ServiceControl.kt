@@ -26,6 +26,8 @@ interface ServiceControl {
      * @return True if the socket is protected, false otherwise.
      */
     fun vpnProtect(socket: Int): Boolean
+    fun vpnProtect(socket: java.net.Socket): Boolean = false
+    fun vpnProtect(socket: java.net.DatagramSocket): Boolean = false
 
     /**
      * Declares the networks the tunnel runs on top of.

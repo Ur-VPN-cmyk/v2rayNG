@@ -44,7 +44,11 @@ object CoreOutboundBuilder {
     /** Applies global outbound options (mux, protocol-specific tweaks, etc.). */
     private fun updateOutboundWithGlobalSettings(outbound: OutboundBean): Boolean {
         try {
-            var muxEnabled = MmkvManager.decodeSettingsBool(AppConfig.PREF_MUX_ENABLED, false)
+            var muxEnabled = try {
+                MmkvManager.decodeSettingsBool(AppConfig.PREF_MUX_ENABLED, false)
+            } catch (_: Throwable) {
+                false
+            }
             val protocol = outbound.protocol
             if (protocol.equals(EConfigType.SHADOWSOCKS.name, true)
                 || protocol.equals(EConfigType.SOCKS.name, true)
@@ -588,7 +592,12 @@ object CoreOutboundBuilder {
      */
     private fun updateOutboundFragment(streamSettings: OutboundBean.StreamSettingsBean): Boolean {
         try {
-            if (MmkvManager.decodeSettingsBool(AppConfig.PREF_FRAGMENT_ENABLED, false) == false) {
+            val fragmentEnabled = try {
+                MmkvManager.decodeSettingsBool(AppConfig.PREF_FRAGMENT_ENABLED, false)
+            } catch (_: Throwable) {
+                false
+            }
+            if (!fragmentEnabled) {
                 return true
             }
             if (streamSettings.security != AppConfig.TLS
@@ -600,24 +609,40 @@ object CoreOutboundBuilder {
                 return true
             }
 
-            var packets =
+            var packets = try {
                 MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_PACKETS) ?: "tlshello"
+            } catch (_: Throwable) {
+                "tlshello"
+            }
             if (streamSettings.security == AppConfig.REALITY
                 && packets == "tlshello"
             ) {
                 packets = "1-3"
             }
 
+            val length = try {
+                MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_LENGTH) ?: "50-100"
+            } catch (_: Throwable) {
+                "50-100"
+            }
+            val delay = try {
+                MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_INTERVAL) ?: "10-20"
+            } catch (_: Throwable) {
+                "10-20"
+            }
+            val maxSplit = try {
+                MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_MAXSPLIT) ?: "10"
+            } catch (_: Throwable) {
+                "10"
+            }
+
             val fragmentMask = OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean(
                 type = "fragment",
                 settings = OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean.MaskSettingsBean(
                     packets = packets,
-                    length = MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_LENGTH)
-                        ?: "50-100",
-                    delay = MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_INTERVAL)
-                        ?: "10-20",
-                    maxSplit = MmkvManager.decodeSettingsString(AppConfig.PREF_FRAGMENT_MAXSPLIT)
-                        ?: "10"
+                    length = length,
+                    delay = delay,
+                    maxSplit = maxSplit
                 )
             )
             val noiseMask = OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean(

@@ -87,13 +87,40 @@ class CoreVpnService : VpnService(), ServiceControl {
             return START_NOT_STICKY
         }
         LogUtil.i(AppConfig.TAG, "StartCore-VPN: Service command received, systemVpnStart=$isSystemVpnStart")
-        if (!setupVpnService()) {
+
+        // Step 1: Start Xray/V2Ray core daemon BEFORE establishing the TUN interface
+        android.util.Log.i("UrVPN-Core", "Step 1: Starting Xray core daemon loop...")
+        if (!CoreServiceManager.startCoreLoop(null)) {
+            android.util.Log.e("UrVPN-Core", "Step 1 failed: Core daemon failed to start")
             unlockStart()
-            // Stop service if setup fails to avoid infinite restart loops (START_STICKY)
             stopSelf()
             return START_NOT_STICKY
         }
-        startService()
+
+        // Step 2: Verify that the core is actually running and bound to SOCKS (10808) and HTTP (10809)
+        android.util.Log.i("UrVPN-Core", "Step 2: Verifying core daemon listening on localhost...")
+        if (!CoreServiceManager.verifyCoreListening()) {
+            android.util.Log.e("UrVPN-Core", "Step 2 failed: Core ports not verified listening. Aborting.")
+            CoreServiceManager.stopCoreLoop()
+            unlockStart()
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        // Step 3: Establish the VPN TUN interface and start tun2socks
+        android.util.Log.i("UrVPN-Core", "Step 3: Core verified bound. Establishing VPN TUN interface...")
+        if (!setupVpnService()) {
+            android.util.Log.e("UrVPN-Core", "Step 3 failed: VPN setup failed")
+            CoreServiceManager.stopCoreLoop()
+            unlockStart()
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        // Step 4: Associate the TUN descriptor and start LAN sharing
+        CoreServiceManager.setVpnInterface(mInterface)
+        RootLanSharing.startClientSharing(this)
+        android.util.Log.i("UrVPN-Core", "Ur VPN connected and routing established successfully.")
         return START_STICKY
     }
 
@@ -102,25 +129,23 @@ class CoreVpnService : VpnService(), ServiceControl {
     }
 
     override fun startService() {
-        if (!::mInterface.isInitialized) {
-            LogUtil.e(AppConfig.TAG, "StartCore-VPN: Interface not initialized")
-            return
-        }
-        if (!CoreServiceManager.startCoreLoop(mInterface)) {
-            LogUtil.e(AppConfig.TAG, "StartCore-VPN: Failed to start core loop")
-            stopAllService()
-            return
-        }
-
-        // Start LAN sharing if enabled in settings
-        RootLanSharing.startClientSharing(this)
+        // Lifecycle is fully managed and verified in onStartCommand
     }
 
     override fun stopService() {
+        android.util.Log.i("UrVPN-Core", "Stopping VPN service and core daemon...")
         stopAllService(true)
     }
 
     override fun vpnProtect(socket: Int): Boolean {
+        return protect(socket)
+    }
+
+    override fun vpnProtect(socket: java.net.Socket): Boolean {
+        return protect(socket)
+    }
+
+    override fun vpnProtect(socket: java.net.DatagramSocket): Boolean {
         return protect(socket)
     }
 
@@ -264,18 +289,26 @@ class CoreVpnService : VpnService(), ServiceControl {
      * @param builder The VPN Builder to configure.
      */
     private fun configurePerAppProxy(builder: Builder) {
-        val selfPackageName = BuildConfig.APPLICATION_ID
+        val selfPackageName = applicationContext.packageName
 
         // If per-app proxy is not enabled, disallow the VPN service's own package and return
         if (MmkvManager.decodeSettingsBool(AppConfig.PREF_PER_APP_PROXY) == false) {
-            builder.addDisallowedApplication(selfPackageName)
+            try {
+                builder.addDisallowedApplication(selfPackageName)
+            } catch (e: Exception) {
+                android.util.Log.e("UrVPN-Core", "Failed to add disallowed application: $selfPackageName", e)
+            }
             return
         }
 
         // If no apps are selected, disallow the VPN service's own package and return
         val apps = MmkvManager.decodeSettingsStringSet(AppConfig.PREF_PER_APP_PROXY_SET)
         if (apps.isNullOrEmpty()) {
-            builder.addDisallowedApplication(selfPackageName)
+            try {
+                builder.addDisallowedApplication(selfPackageName)
+            } catch (e: Exception) {
+                android.util.Log.e("UrVPN-Core", "Failed to add disallowed application: $selfPackageName", e)
+            }
             return
         }
 
@@ -296,6 +329,9 @@ class CoreVpnService : VpnService(), ServiceControl {
                 LogUtil.e(AppConfig.TAG, "StartCore-VPN: Failed to configure app", e)
             }
         }
+        try {
+            builder.addDisallowedApplication(selfPackageName)
+        } catch (_: Exception) {}
     }
 
     /**

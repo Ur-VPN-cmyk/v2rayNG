@@ -61,14 +61,14 @@ class TProxyService(
         LogUtil.d(AppConfig.TAG, "HevSocks5Tunnel Config content:\n$configContent")
 
         try {
-//            LogUtil.i(AppConfig.TAG, "TProxyStartService...")
+            android.util.Log.i("UrVPN-Core", "Starting hev-socks5-tunnel pointing upstream to 127.0.0.1:${SettingsManager.getSocksPort()} on TUN fd ${vpnInterface.fd}")
             if (isLibraryLoaded) {
                 TProxyStartService(configFile.absolutePath, vpnInterface.fd)
             } else {
                 LogUtil.w(AppConfig.TAG, "hev-socks5-tunnel library not loaded, skipping TProxyStartService")
             }
         } catch (e: Exception) {
-            LogUtil.e(AppConfig.TAG, "HevSocks5Tunnel exception: ${e.message}")
+            android.util.Log.e("UrVPN-Core", "hev-socks5-tunnel failed: ${e.message}", e)
         }
     }
 

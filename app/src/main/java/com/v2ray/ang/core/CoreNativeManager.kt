@@ -26,6 +26,14 @@ object CoreNativeManager {
      *
      */
     fun initCoreEnv(context: Context?) {
+        Libv2ray.socketProtector = { socket ->
+            when (socket) {
+                is java.net.Socket -> CoreServiceManager.vpnProtect(socket)
+                is java.net.DatagramSocket -> CoreServiceManager.vpnProtect(socket)
+                is Int -> CoreServiceManager.vpnProtect(socket)
+                else -> false
+            }
+        }
         if (initialized.compareAndSet(false, true)) {
             try {
                 Seq.setContext(context?.applicationContext)

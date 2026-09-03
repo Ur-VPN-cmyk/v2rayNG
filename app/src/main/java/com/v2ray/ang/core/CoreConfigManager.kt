@@ -453,6 +453,116 @@ object CoreConfigManager {
      * Serialize a runtime configuration into a standard result object.
      */
     private fun toConfigResult(configContext: CoreConfigContext, v2rayConfig: V2rayConfig): ConfigResult {
+        try {
+            val jsonStr = JsonUtil.toJson(v2rayConfig)
+            val jsonObject = jsonStr?.let { JsonUtil.parseString(it)?.asJsonObject }
+            if (jsonObject != null && jsonObject.has("outbounds")) {
+                val outboundsArray = jsonObject.getAsJsonArray("outbounds")
+                outboundsArray.forEach { elem ->
+                    val ob = elem.asJsonObject
+                    val protocol = ob.get("protocol")?.asString?.lowercase()
+                    val settings = ob.getAsJsonObject("settings")
+                    if (settings != null) {
+                        when (protocol) {
+                            "vless" -> {
+                                if (!settings.has("vnext") && settings.has("address")) {
+                                    val address = settings.get("address").asString
+                                    val port = settings.get("port")?.asInt ?: 443
+                                    val id = settings.get("id")?.asString ?: ""
+                                    val encryption = settings.get("encryption")?.asString ?: "none"
+                                    val flow = settings.get("flow")?.asString ?: ""
+                                    val level = settings.get("level")?.asInt ?: 8
+
+                                    val userObj = com.google.gson.JsonObject().apply {
+                                        addProperty("id", id)
+                                        addProperty("encryption", encryption)
+                                        addProperty("flow", flow)
+                                        addProperty("level", level)
+                                    }
+                                    val usersArray = com.google.gson.JsonArray().apply { add(userObj) }
+                                    val vnextObj = com.google.gson.JsonObject().apply {
+                                        addProperty("address", address)
+                                        addProperty("port", port)
+                                        add("users", usersArray)
+                                    }
+                                    val vnextArray = com.google.gson.JsonArray().apply { add(vnextObj) }
+                                    settings.add("vnext", vnextArray)
+                                }
+                            }
+                            "vmess" -> {
+                                if (!settings.has("vnext") && settings.has("address")) {
+                                    val address = settings.get("address").asString
+                                    val port = settings.get("port")?.asInt ?: 443
+                                    val id = settings.get("id")?.asString ?: ""
+                                    val security = settings.get("security")?.asString ?: "auto"
+                                    val level = settings.get("level")?.asInt ?: 8
+
+                                    val userObj = com.google.gson.JsonObject().apply {
+                                        addProperty("id", id)
+                                        addProperty("alterId", 0)
+                                        addProperty("security", security)
+                                        addProperty("level", level)
+                                    }
+                                    val usersArray = com.google.gson.JsonArray().apply { add(userObj) }
+                                    val vnextObj = com.google.gson.JsonObject().apply {
+                                        addProperty("address", address)
+                                        addProperty("port", port)
+                                        add("users", usersArray)
+                                    }
+                                    val vnextArray = com.google.gson.JsonArray().apply { add(vnextObj) }
+                                    settings.add("vnext", vnextArray)
+                                }
+                            }
+                            "trojan" -> {
+                                if (!settings.has("servers") && settings.has("address")) {
+                                    val address = settings.get("address").asString
+                                    val port = settings.get("port")?.asInt ?: 443
+                                    val password = settings.get("password")?.asString ?: ""
+                                    val level = settings.get("level")?.asInt ?: 8
+
+                                    val serverObj = com.google.gson.JsonObject().apply {
+                                        addProperty("address", address)
+                                        addProperty("port", port)
+                                        addProperty("password", password)
+                                        addProperty("level", level)
+                                    }
+                                    val serversArray = com.google.gson.JsonArray().apply { add(serverObj) }
+                                    settings.add("servers", serversArray)
+                                }
+                            }
+                            "shadowsocks" -> {
+                                if (!settings.has("servers") && settings.has("address")) {
+                                    val address = settings.get("address").asString
+                                    val port = settings.get("port")?.asInt ?: 8388
+                                    val method = settings.get("method")?.asString ?: "aes-256-gcm"
+                                    val password = settings.get("password")?.asString ?: ""
+                                    val level = settings.get("level")?.asInt ?: 8
+
+                                    val serverObj = com.google.gson.JsonObject().apply {
+                                        addProperty("address", address)
+                                        addProperty("port", port)
+                                        addProperty("method", method)
+                                        addProperty("password", password)
+                                        addProperty("level", level)
+                                    }
+                                    val serversArray = com.google.gson.JsonArray().apply { add(serverObj) }
+                                    settings.add("servers", serversArray)
+                                }
+                            }
+                        }
+                    }
+                }
+                val formatted = com.google.gson.GsonBuilder().setPrettyPrinting().create().toJson(jsonObject)
+                return ConfigResult(
+                    status = true,
+                    guid = configContext.guid,
+                    content = formatted
+                )
+            }
+        } catch (e: Exception) {
+            LogUtil.e(AppConfig.TAG, "Failed to format unified Xray config JSON", e)
+        }
+
         return ConfigResult(
             status = true,
             guid = configContext.guid,

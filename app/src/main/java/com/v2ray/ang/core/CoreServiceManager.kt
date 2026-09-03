@@ -54,6 +54,64 @@ object CoreServiceManager {
     /** Tun descriptor the core was started with, null in the proxy only and root run modes. */
     private var currentVpnInterface: ParcelFileDescriptor? = null
 
+    fun setVpnInterface(vpnInterface: ParcelFileDescriptor?) {
+        currentVpnInterface = vpnInterface
+    }
+
+    fun vpnProtect(socket: Int): Boolean {
+        return serviceControl?.get()?.vpnProtect(socket) ?: false
+    }
+
+    fun vpnProtect(socket: java.net.Socket): Boolean {
+        return serviceControl?.get()?.vpnProtect(socket) ?: false
+    }
+
+    fun vpnProtect(socket: java.net.DatagramSocket): Boolean {
+        return serviceControl?.get()?.vpnProtect(socket) ?: false
+    }
+
+    fun verifyCoreListening(
+        socksPort: Int = SettingsManager.getSocksPort(),
+        httpPort: Int = SettingsManager.getHttpPort(),
+        timeoutMs: Long = 3000
+    ): Boolean {
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            val socksOk = isPortListening(socksPort)
+            val httpOk = isPortListening(httpPort)
+            if (socksOk && httpOk) {
+                android.util.Log.i(
+                    "UrVPN-Core",
+                    "Core daemon verified listening on 127.0.0.1:$socksPort (SOCKS) and 127.0.0.1:$httpPort (HTTP)"
+                )
+                return true
+            }
+            try {
+                Thread.sleep(100)
+            } catch (_: InterruptedException) {
+                break
+            }
+        }
+        val socksBound = isPortListening(socksPort)
+        val httpBound = isPortListening(httpPort)
+        android.util.Log.e(
+            "UrVPN-Core",
+            "Core verification failed: SOCKS port ($socksPort) listening=$socksBound, HTTP port ($httpPort) listening=$httpBound"
+        )
+        return false
+    }
+
+    private fun isPortListening(port: Int): Boolean {
+        return try {
+            java.net.Socket().use { s ->
+                s.connect(java.net.InetSocketAddress("127.0.0.1", port), 150)
+                true
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     var serviceControl: SoftReference<ServiceControl>? = null
         set(value) {
             field = value
@@ -147,9 +205,16 @@ object CoreServiceManager {
         if (dialerAddr.isNotNullEmpty()) {
             CoreNativeManager.reconcileBrowserDialer(dialerAddr)
         }
-        coreController.startLoop(result.content, tunFd)
+        try {
+            android.util.Log.i("UrVPN-Core", "Starting coreController loop...")
+            coreController.startLoop(result.content, tunFd)
+        } catch (e: Exception) {
+            android.util.Log.e("UrVPN-Core", "Xray core failed to start: ${e.message}", e)
+            throw e
+        }
 
         if (!isRunning()) {
+            android.util.Log.e("UrVPN-Core", "Core failed to start: isRunning returned false")
             error("Core failed to start")
         }
 
