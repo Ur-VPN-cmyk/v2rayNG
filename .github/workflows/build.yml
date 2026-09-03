@@ -20,7 +20,8 @@ jobs:
       - name: Clone AndroidLibXrayLite
         run: |
           rm -rf AndroidLibXrayLite
-          git clone --depth=1 https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
+          git clone --depth=1 --recurse-submodules https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
+          rm -rf AndroidLibXrayLite/.git
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
